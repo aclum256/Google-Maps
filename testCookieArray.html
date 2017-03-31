@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<title>For testing</title>
+	<body>
+		<h1>PLEASE WORK!</h1>
+		<?php
+			$addressArr = json_decode($_COOKIE['addressArr'], true);
+			$nameArr = json_decode($_COOKIE['nameArr'], true);
+		?>
+		<script type="text/javascript">
+			window.onload = function() {
+				displayStuff();
+			};
+			function displayStuff() {
+				var numBars = "<?php echo count($nameArr) ?>";
+				var displayThis = "";
+				<?php
+					$jsNameArr = json_encode($nameArr);
+					echo "var namesArr = ". $jsNameArr . ";\n";
+					$jsAddressArr = json_encode($addressArr);
+					echo "var addressArr = ". $jsAddressArr . ";\n";
+				?>
+				for(i = 0; i < numBars; i++){
+					displayThis = displayThis + namesArr[i] + " is located at " + addressArr[i] + "<br>";
+				}
+				document.write(displayThis);
+			}
+		</script>
+		<form method="post">
+			<input type="button" value="Display" id="submit" onclick="dispayStuff()"/>
+		</form>
+	</body>
+</html>

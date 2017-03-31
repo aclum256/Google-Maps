@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta charset="utf-8">
+		<title>Map</title>
+		<style>
+			#map {
+				height: 100%;
+			}
+			html, body {
+				height: 80%;
+				width: 80%
+				margin: 10;
+				padding: 10;
+			}
+		</style>
+	</head>
+	<body>
+		<?php
+			$addressArr = json_decode($_COOKIE['addressArr'], true);
+			$nameArr = json_decode($_COOKIE['nameArr'], true);
+		?>
+		<div id="map"></div>
+		<script>
+			
+			function initMap() {
+				var myLatLng = {lat: 38.9717, lng: -95.2353};
+
+				var map = new google.maps.Map(document.getElementById('map'), {
+					zoom: 13,
+					center: myLatLng
+				});
+		
+				var geocoder = new google.maps.Geocoder();
+				geocodeAddress(geocoder, map);
+			}
+	  
+			function geocodeAddress(geocoder, resultsMap) {
+				var numBars = "<?php echo count($nameArr) ?>";
+				<?php
+					$jsNameArr = json_encode($nameArr);
+					echo "var nameArr = ". $jsNameArr . ";\n";
+					$jsAddressArr = json_encode($addressArr);
+					echo "var addressArr = ". $jsAddressArr . ";\n";
+				?>
+				var address = "";
+				var name = "";
+				var information = "";
+				for(i = 0; i < numBars; ++i) {
+					address = addressArr[i];
+					name = nameArr[i];
+					geocoder.geocode({'address': address}, function(results, status) {
+						if(status == "OK") {
+							var marker = new google.maps.Marker({
+								title: nameArr[i],
+								map: resultsMap,
+								position: results[0].geometry.location
+							});
+							information = name + "<br>" + address;
+							attatchMessage(marker, information);
+						}
+						else {
+							alert('Geocode was not successful for the following reason: ' + status);
+						}
+					});
+				}
+			}
+			
+			function attatchMessage(myMarker, message) {
+				var infowindow = new google.maps.InfoWindow({
+					content: message
+				});
+				
+				myMarker.addListener('click', function() {
+					infowindow.setContent(message);
+					infowindow.open(myMarker.get('map'), myMarker);
+				});
+			}
+			
+			
+			
+		</script>
+		<script async defer
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4fKXnBcXnH-ettsghc31PvF5LEerYU3c&callback=initMap">
+		</script>
+	</body>
+</html>
